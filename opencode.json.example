@@ -1,0 +1,48 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "provider": {
+    "ollama": {
+      "options": { "baseURL": "http://localhost:11434/v1" }
+    }
+  },
+
+  "model": "ollama/qwen3-coder",
+  "small_model": "ollama/qwen2.5-coder:7b",
+
+  "mcp": {
+    "code-context": {
+      "type": "local",
+      "command": ["python", "/chemin/absolu/vers/mcp_server.py"],
+      "enabled": true,
+      "environment": {
+        "CODE_ROOT": "/chemin/absolu/vers/le/code",
+        "TAGS_FILE": "/chemin/absolu/vers/tags.json",
+        "DB_PATH": "/chemin/absolu/vers/metier.db",
+        "LOG_PATH": "/var/log/app/app.log",
+        "DOCS_DB": "/chemin/absolu/vers/rag.db"
+      }
+    }
+  },
+
+  "agent": {
+    "deliver": {
+      "description": "Implémente une tâche cadrée en non-interactif, écritures auto-acceptées",
+      "mode": "primary",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow"
+      }
+    },
+    "explore": {
+      "description": "Lecture seule : explore et explique sans rien modifier",
+      "mode": "primary",
+      "permission": {
+        "edit": "deny",
+        "write": "deny",
+        "bash": "ask"
+      }
+    }
+  }
+}

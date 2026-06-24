@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Données locales (ne jamais committer)
+*.db
+*.sqlite
+*.sqlite3
+tags.json
+tags
+
+# Config locale (contient des chemins/credentials de l'environnement)
+opencode.json
+.env
+
+# Logs
+*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

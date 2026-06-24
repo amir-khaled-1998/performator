@@ -1,0 +1,12 @@
+# Dépendances Python
+# Installation : pip install -r requirements.txt
+# En environnement souverain : pip install --index-url https://<artifactory>/pypi/simple -r requirements.txt
+
+numpy>=1.24
+mcp>=1.0          # SDK Model Context Protocol (serveur MCP)
+
+# --- Dépendances SYSTÈME (hors pip, à installer séparément) ---
+#   ripgrep            (apt install ripgrep)        -> recherche code
+#   universal-ctags    (apt install universal-ctags) -> index symboles
+#   ollama             (https://ollama.com)          -> LLM + embeddings locaux
+#   opencode           (curl -fsSL https://opencode.ai/install | bash) -> agent de code
