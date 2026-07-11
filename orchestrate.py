@@ -73,14 +73,15 @@ CONTRAINTES :
 def run_opencode(repo: str, brief: str, model: str, agent: str,
                  config_path: str | None) -> str:
     """Lance OpenCode en non-interactif. Surcharge cette fonction pour tester sans binaire."""
-    cmd = ["opencode", "run", "-q", "--model", model, "--agent", agent, brief]
+    cmd = ["opencode", "run", "--model", model, "--agent", agent, brief]
     env_note = f" (OPENCODE_CONFIG={config_path})" if config_path else ""
     print(f"→ opencode run --model {model} --agent {agent}{env_note}")
     import os
     env = dict(os.environ)
     if config_path:
         env["OPENCODE_CONFIG"] = config_path
-    r = subprocess.run(cmd, cwd=repo, capture_output=True, text=True, env=env, timeout=3600)
+    r = subprocess.run(cmd, cwd=repo, capture_output=True, text=True, env=env, timeout=3600,
+                       stdin=subprocess.DEVNULL)  # sans quoi opencode run attend stdin et bloque
     if r.returncode != 0:
         print("⚠ OpenCode a renvoyé un code non nul :", r.stderr[:500], file=sys.stderr)
     return r.stdout

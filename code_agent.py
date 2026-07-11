@@ -76,6 +76,8 @@ class CodeTools:
 
     def build_index(self) -> str:
         """À lancer UNE fois (et après gros changements). Indexe les symboles en JSON-lines."""
+        # ctags refuse d'écraser un fichier tags au format JSON : on le supprime d'abord.
+        self.tags_file.unlink(missing_ok=True)
         subprocess.run(
             ["ctags", "-R", "--output-format=json", "--fields=+n",
              "-f", str(self.tags_file), str(self.root)],
