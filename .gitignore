@@ -23,3 +23,11 @@ opencode.json
 .DS_Store
 .idea/
 .vscode/
+
+# Artefacts de build PyInstaller
+build/
+dist/
+*.spec
+
+# Donnees de demonstration telechargees
+docs_demo/
