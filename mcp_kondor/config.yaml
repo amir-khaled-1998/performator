@@ -1,0 +1,64 @@
+# Configuration du MCP Kondor+ — tout ce qui n'est pas déclaré ici est interdit à l'agent.
+# Un fichier de config par environnement (config_rec.yaml, config_prod.yaml…).
+
+env: RECETTE
+read_only: false            # true = aucune action d'écriture (conseillé pour la PROD au début)
+
+ssh:
+  accept_unknown_host: false  # faire une première connexion manuelle "ssh user@serveur" pour enregistrer la clé du serveur
+
+disk_check: [/opt/kplus, /opt/deliveries]
+
+# --- Services Kondor+ : status doit renvoyer rc=0 si le service tourne ---
+services:
+  kplus_server:
+    start:  /opt/kplus/bin/start_server.sh
+    stop:   /opt/kplus/bin/stop_server.sh
+    status: pgrep -f kplus_server
+    timeout: 300
+  kplus_feeder:
+    start:  /opt/kplus/bin/start_feeder.sh
+    stop:   /opt/kplus/bin/stop_feeder.sh
+    status: pgrep -f kplus_feeder
+
+logs:
+  server: /opt/kplus/logs/server.log
+  feeder: /opt/kplus/logs/feeder.log
+  import: /opt/kplus/logs/import.log
+
+# --- Livraisons ---
+deliveries:
+  local_dir: C:\livraisons          # dossier Windows d'où partent les paquets
+  incoming:  /opt/deliveries/incoming
+  target:    /opt/kplus/app
+  backups:   /opt/deliveries/backups
+
+# --- Import / export Kondor+ ---
+kondor_io:
+  local_import_dir: C:\kondor\import   # fichiers Windows à importer
+  local_export_dir: C:\kondor\export   # où rapatrier les exports / KPI
+  import_dir: /opt/kplus/import
+  export_dir: /opt/kplus/export
+  encoding: latin-1
+  # {table} et {file} sont remplacés (valeurs déjà protégées)
+  import_cmd: /opt/kplus/bin/run_import.sh {table} {file}
+  import_timeout: 1800
+  export_cmd: /opt/kplus/bin/run_export.sh {table}
+  exportable: [Deals, KPI_Daily]
+
+# --- Formats des tables Kondor (colonnes dans l'ordre du fichier) ---
+# types : int | float | date | str ; options : required, max, fmt (date), values (liste autorisée)
+formats:
+  Deals:
+    sep: ";"
+    header: false
+    decimal: "."
+    encoding: latin-1
+    columns:
+      - {name: Deals_Id,      type: int,   required: true}
+      - {name: TradeDate,     type: date,  fmt: "%Y%m%d", required: true}
+      - {name: ValueDate,     type: date,  fmt: "%Y%m%d"}
+      - {name: Amount,        type: float, required: true}
+      - {name: Currencies_Id, type: str,   max: 3, required: true}
+      - {name: BuySell,       type: str,   values: [B, S]}
+      - {name: Folders_Id,    type: int}

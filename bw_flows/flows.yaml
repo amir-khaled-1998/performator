@@ -1,0 +1,48 @@
+# Configuration du MCP bw-flows (rétro-spécification des flux TIBCO BW 5 -> Kondor+)
+
+corpus_dir: C:\mcp\bw_flows\corpus      # <corpus_dir>/<flux>/in et /out
+spec_dir:   C:\mcp\bw_flows\specs       # SPEC_<flux>.md et golden_<flux>.jsonl
+max_pairs: 1000                         # paires analysées au maximum par flux
+lookup_max_distinct: 200                # taille max d'une table de correspondance déduite
+
+# Champs masqués dans tout ce qui remonte au modèle (motifs, * autorisé).
+# Le masque est un hash court : les égalités restent visibles, pas les valeurs.
+mask_fields: ["*Counterpart*Name*", "*Account*", "*IBAN*", "*Trader*"]
+
+# Groupe d'EAR BW5 : tous les .ear de ces dossiers (sous-dossiers compris) sont indexés ensemble.
+ears:
+  dirs: [C:\mcp\bw_flows\ears]
+  # Configs exportées par l'Administrator (AppManage -export -out <app>.xml) : valeurs réelles
+  # des variables globales. Rattachées à un EAR quand le nom du fichier ou de l'appli contient le nom de l'EAR.
+  deployment_configs: [C:\mcp\bw_flows\deploy]
+
+# Formats réutilisables (ceux de tes tables Kondor+)
+formats:
+  Kondor_Deals:
+    type: csv
+    sep: ";"
+    header: false
+    encoding: latin-1
+    columns: [Deals_Id, TradeDate, ValueDate, Amount, Currencies_Id, BuySell, Cpty_Id, Folders_Id, Source]
+
+flows:
+  deals_fo_to_kondor:
+    description: Deals du front-office (XML) transformés par BW en fichier d'import Kondor Deals
+    input:
+      pattern: "TRADES_*.xml"
+      remote_dir: /data/bw/archive/in/trades        # optionnel : pour sync_corpus
+      format:
+        type: xml           # xml | csv | fixed | json
+        record: Trade       # balise d'un enregistrement (espaces de noms ignorés)
+    output:
+      pattern: "Deals_*.csv"
+      remote_dir: /opt/kplus/import/archive
+      format: Kondor_Deals
+    key:
+      input: "@id"          # chemin aplati côté entrée (voir l'outil profile)
+      output: Deals_Id
+      normalize: [lstrip0]  # upper | lstrip0
+
+# Exemple de format positionnel :
+#   input:
+#     format: {type: fixed, skip_lines: 1, columns: [{name: Ref, start: 1, len: 12}, {name: Amt, start: 13, len: 15}]}

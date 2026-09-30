@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Journaux d'audit
+*.log
+
+# Données : jamais dans le dépôt (données bancaires, EAR, specs générées)
+corpus/
+specs/
+ears/
+deploy/
+demo/
+*.ear
+*.par
+*.sar
+*.jsonl
+
+# Configs réelles : garder uniquement les modèles versionnés
+config_*.yaml
+flows_*.yaml
+*.local.yaml
+.env
